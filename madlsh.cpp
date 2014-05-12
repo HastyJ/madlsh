@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <string>
+#include <random>
 
 using namespace std;
 
@@ -12,24 +13,24 @@ struct Index{
 	M = m;
 	dim = data_dim;
         min_vector = min_vect;
-        max_vector = max_vect:
+        max_vector = max_vect;
         bucket_values = new unordered_map<string, double*>[L];
         dimension_array = new int*[L];
         threshold_array = new double*[L];
-	tr1::mt19937 eng;  
-	tr1::uniform_real<double> unif(0, data_dim);
+	mt19937 eng;  
+	uniform_real_distribution<double> unif(0, data_dim);
 	unif(eng);
 	
 	for(int i = 0; i < L; i++)
 	{
 	    dimension_array[i] = new int[M];
-	    trheshold_array[i] = new double[M];
+	    threshold_array[i] = new double[M];
 	    
 	    for(int j = 0; j < M; j++)
 	    {
-	        int local_dim = int(unif());
-		tr1::uniform_real<double> local_unif(min_vector[local_dim], max_vector[local_dim]);
-                double local_threshold = local_unif();
+	        int local_dim = int(unif(eng));
+		uniform_real_distribution<double> local_unif(min_vector[local_dim], max_vector[local_dim]);
+                double local_threshold = local_unif(eng);
 		dimension_array[i][j] = local_dim;
 		threshold_array[i][j] = local_threshold;
 	    }
@@ -51,7 +52,7 @@ struct Index{
     {
 	unordered_map<string, double*>& local_bucket_values = bucket_values[group];
 	string hk;
-	hask_key(hk, data, group);
+	hash_key(hk, data, group);
 	unordered_map<string, double*>::iterator local_ite = local_bucket_values.find(hk);
 	if(local_ite == local_bucket_values.end())
 	{
@@ -64,13 +65,13 @@ struct Index{
     {
 	for(int i=0;i<L; i++)
 	{
-	    add_to_group(double* data, int group);	
+	    add_to_group(data, i);	
         }
     };
 
     int hash_value(double* data, int i, int j)
     {
-	if(data[i] > threshold)
+	if(data[dimension_array[i][j]] > threshold_array[i][j])
 	    return 1;
 	else
 	    return 0;
