@@ -36,6 +36,8 @@ typedef struct
     //LxM array storing the threshold that have been randomly selected.
     float** threshold_array;
 
+    vector<int>	hash_table;
+
 
 } ThresholdIndex;
 

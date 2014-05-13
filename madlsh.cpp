@@ -12,7 +12,9 @@ ThresholdIndex *init(int l, int m, int data_dim, float* min_vect, float* max_vec
 	my_index->bucket_values = new unordered_map<string, unordered_map<float*, float*>>[my_index->L];
 	my_index->dimension_array = new int*[my_index->L];
 	my_index->threshold_array = new float*[my_index->L];
-	mt19937 eng;
+	seed_seq seq{1, 2, 3, 4, 5};
+	mt19937 eng(seq);
+//	mt19937 eng;
 	uniform_real_distribution<float> unif(0, data_dim);
 	unif(eng);
 
@@ -37,17 +39,12 @@ void add_to_group(ThresholdIndex *index, float* data, int group)
 {
 	unordered_map<string, unordered_map<float*, float*> >& local_bucket_values = index->bucket_values[group];
 	string hk;
-	cout <<"add_to_group POSITION 1"<<endl;
 	hash_key(index, hk, data, group);
-	cout <<"add_to_group POSITION 2"<<endl;
 	local_bucket_values[hk][data] = data;
-	cout <<"add_to_group POSITION 3"<<endl;
 }
 
 void insert(ThresholdIndex *index, float* data)
 {
-//	cout << "data = "<<data<<endl;
-	cout <<"insert POSITION BEGIN"<<endl;
 	//Test if this data has already been inserted or not
     unordered_set<float*>::iterator data_values_ite = index->data_values.find(data);
     if(data_values_ite != index->data_values.end())
@@ -55,26 +52,13 @@ void insert(ThresholdIndex *index, float* data)
     else
     	index->data_values.insert(data);
 
-	cout <<"insert POSITION 0"<<endl;
-
 	for(int i=0;i<index->L; i++)
 	{
-		cout <<"insert POSITION 0.1"<<endl;
 		add_to_group(index, data, i);
-		cout <<"insert POSITION 0.2"<<endl;
     }
-	cout <<"insert POSITION END"<<endl;
 }
 int hash_value(ThresholdIndex *index, float* data, int i, int j)
 {
-//	if(index->dimension_array[i][j] >= 4096)
-//	{
-	cout <<"index->dimension_array[i][j] = "<<index->dimension_array[i][j]<<endl;
-	cout <<"index->threshold_array[i][j] = "<<index->threshold_array[i][j]<<endl;
-	cout <<"data[0] = "<<data[0]<<endl;
-	cout <<"data[index->dimension_array[i][j]] = "<<data[index->dimension_array[i][j]]<<endl;
-	cout <<"hash_value POSITION 0"<<endl;
-//	}
 	if(data[index->dimension_array[i][j]] > index->threshold_array[i][j])
 		return 1;
 	else
@@ -83,15 +67,10 @@ int hash_value(ThresholdIndex *index, float* data, int i, int j)
 void hash_key(ThresholdIndex *index, string& hk, float* data, int group)
 {
 	hk = "";
-	cout <<"hash_key POSITION BEGIN"<<endl;
 	for(int i = 0; i < index->M; i++)
 	{
-		cout <<"hash_key POSITION 0.1"<<endl;
-		cout <<"i = "<<i<<endl;
 		hk += to_string(hash_value(index, data, group, i));
-		cout <<"hash_key POSITION 0.2"<<endl;
 	}
-	cout <<"hash_key POSITION END"<<endl;
 }
 
 float** query(ThresholdIndex *index, float* data, int N, int* res_number)
@@ -102,36 +81,27 @@ float** query(ThresholdIndex *index, float* data, int N, int* res_number)
 	int query_counter = 0;
 	for(int i = 0; i < index->L; i++)
 	{
-//		cout << "query POSITION 0.1"<<endl;
 		unordered_map<string, unordered_map<float*, float*> >& local_bucket_values = index->bucket_values[i];
 		string hk = "";
 		hash_key(index, hk, data, i);
 		local_ite = local_bucket_values.find(hk);
-//		cout << "query POSITION 0.2"<<endl;
+
 		if(local_ite != local_bucket_values.end())
 		{
 			for(	local_local_ite = local_ite->second.begin();
 					local_local_ite != local_ite->second.end();
 					local_local_ite++)
 			{
-//				cout << "query POSITION 0.2.1"<<endl;
-				cout << "local_local_ite->second = "<<local_local_ite->second<<endl;
 				res[query_counter] = local_local_ite->second;
-//				cout << "query POSITION 0.2.2"<<endl;
 				query_counter += 1;
-//				cout << "query POSITION 0.2.3"<<endl;
 				if(query_counter >= N)
 				{
-//					cout << "query POSITION 0.2.4"<<endl;
 					res_number[0] = N;
-//					cout << "res[query_counter -1] = "<<res[query_counter -1]<<endl;
-//					cout << "query POSITION 0.2.5"<<endl;
 					return res;
 				}
 			}
 		}
 	}
-//	cout << "query POSITION 1"<<endl;
 	res_number[0] = query_counter;
 	return	res;
 }
