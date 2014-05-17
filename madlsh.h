@@ -49,5 +49,6 @@ extern "C" {
     void insert(ThresholdIndex *index, float* data);
     int hash_value(ThresholdIndex *index, float* data, int i, int j);
     void hash_key(ThresholdIndex *index, string& hk, float* data, int group);
+    char* hash_key(ThresholdIndex *index, float* data, int group);
     float** test();
 }

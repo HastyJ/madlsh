@@ -73,11 +73,23 @@ void hash_key(ThresholdIndex *index, string& hk, float* data, int group)
 	}
 }
 
+char* hash_key(ThresholdIndex *index, float* data, int group)
+{
+	string hk = "";
+	for(int i = 0; i < index->M; i++)
+	{
+		hk += to_string(hash_value(index, data, group, i));
+	}
+	return hk.c_str();
+}
+
 float** query(ThresholdIndex *index, float* data, int N, int* res_number)
 {
 	float**	res = new float*[N];
 	unordered_map<string, unordered_map<float*, float*> >::iterator local_ite;
 	unordered_map<float*, float*>::iterator local_local_ite;
+	unordered_map<float*> local_res;
+	unordered_map<float*>::iterator local_res_ite;
 	int query_counter = 0;
 	for(int i = 0; i < index->L; i++)
 	{
@@ -92,8 +104,15 @@ float** query(ThresholdIndex *index, float* data, int N, int* res_number)
 					local_local_ite != local_ite->second.end();
 					local_local_ite++)
 			{
-				res[query_counter] = local_local_ite->second;
-				query_counter += 1;
+
+				local_res_ite	= local_res.find();
+				if(local_res_ite == local_res.end())
+				{
+					res[query_counter] = local_local_ite->second;
+					query_counter += 1;
+					local_res.insert(local_local_ite->second);
+				}
+
 				if(query_counter >= N)
 				{
 					res_number[0] = N;
