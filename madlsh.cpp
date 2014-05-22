@@ -38,8 +38,7 @@ ThresholdIndex *init(int l, int m, int data_dim, float* min_vect, float* max_vec
 void add_to_group(ThresholdIndex *index, float* data, int group)
 {
 	unordered_map<string, unordered_map<float*, float*> >& local_bucket_values = index->bucket_values[group];
-	string hk;
-	hash_key(index, hk, data, group);
+	string hk = hash_key(index, hk, data, group);
 	local_bucket_values[hk][data] = data;
 }
 
@@ -73,14 +72,25 @@ void hash_key(ThresholdIndex *index, string& hk, float* data, int group)
 	}
 }
 
-char* hash_key(ThresholdIndex *index, float* data, int group)
+//char* hash_key(ThresholdIndex *index, float* data, int group)
+//{
+//	string hk = "";
+//	for(int i = 0; i < index->M; i++)
+//	{
+//		hk += to_string(hash_value(index, data, group, i));
+//	}
+//	return hk.c_str();
+//}
+
+const string& hash_key(ThresholdIndex *index, float* data, int group)
 {
-	string hk = "";
+
 	for(int i = 0; i < index->M; i++)
 	{
-		hk += to_string(hash_value(index, data, group, i));
+		local_char_array += hash_value(index, data, group, i);
 	}
-	return hk.c_str();
+	string hk(local_char_array);
+	return hk;
 }
 
 float** query(ThresholdIndex *index, float* data, int N, int* res_number)
