@@ -15,9 +15,27 @@ MIT License
 Examples
 --------
 
-Create a ThresholdIndex : 
+Load a table of real vectors (init contains the C interface and a few utilities): 
+```lua
+require 'init'
+local similarityTable = torch.load('./SimilarityTable.1.m')
+```
+Compute some statistics on it or a portion of it, including the minvector and the maxvector:
 
 ```lua
+local dataTensor = madlsh.getDataTensor(similarityTable)
+local N = dataTensor:size(1)
+local stats = madlsh.buildThresholdLSHStatistics(dataTensor)
+
+local dim = dataTensor:size(2)
+local max_vect = stats.max_vector
+```
+Create a ThresholdIndex: 
+
+```lua
+local L = 50
+local M = 40
+local min_vect = stats.min_vector
 local index = madlsh.clib.init(L, M, dim, min_vect, max_vect)
 ```
 This will create the following index : 
