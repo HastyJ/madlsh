@@ -48,3 +48,10 @@ for i=1, N do
    madlsh.clib.insert(index, torch.data(dataTensor[i]))
 end
 ```
+
+Query the index for similarity retrieval around the first image (dataTensor[1]), with a maximum number of 10000 results,
+and an output number of results res_number:
+```lua
+local res_number = torch.IntTensor(1):fill(0)
+qres = madlsh.clib.query(index, torch.data(dataTensor[1]), 10000, torch.data(res_number))
+```
