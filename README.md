@@ -55,3 +55,11 @@ and an output number of results res_number:
 local res_number = torch.IntTensor(1):fill(0)
 qres = madlsh.clib.query(index, torch.data(dataTensor[1]), 10000, torch.data(res_number))
 ```
+AN easy way to loop over the results and print them is (requires the 'ffi' module):
+```lua
+for i=0, res_number[1]-1 do
+  local ptr = tonumber( ffi.cast('intptr_t', qres[i]) )
+  s = torch.Storage(dim,ptr)
+--  print("s = ", s)
+end
+```
