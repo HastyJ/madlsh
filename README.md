@@ -38,7 +38,13 @@ local M = 40
 local min_vect = stats.min_vector
 local index = madlsh.clib.init(L, M, dim, min_vect, max_vect)
 ```
-This will create the following index : 
+This will create the following index: 
 * L amplification functions defined by M basic hash functions each, i.e. [h^1_1, ..., h^1_M], ..., [h^L_1, ..., h^L_M].
 * h^j_i each has a randomly chosen dimension and a randomly chosen threshold.
  
+Insert the data load: 
+```lua
+for i=1, N do
+   madlsh.clib.insert(index, torch.data(dataTensor[i]))
+end
+```
